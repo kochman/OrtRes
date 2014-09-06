@@ -15,6 +15,7 @@ def index():
 	"""Index page."""
 	return flask.render_template('index.html')
 
+
 @app.route('/send-email', methods=['POST'])
 def send_email():
 	email = flask.request.form['email']
@@ -55,6 +56,19 @@ sendgrid_password = os.getenv('SENDGRID_PASSWORD')
 google_drive_username = os.getenv("GOOGLE_DRIVE_USERNAME")
 google_drive_password = os.getenv("GOOGLE_DRIVE_PASSWORD")
 google_drive_spreadsheet_key = os.getenv("GOOGLE_DRIVE_SPREADSHEET_KEY")
+
+ADMINS = ['sidney@kochman.org']
+if not app.debug:
+	import logging
+	from logging.handlers import SMTPHandler
+	mail_handler = SMTPHandler(
+		'smtp.sendgrid.net',
+		'server-error@ortres.sidney.kochman.org',
+		ADMINS, 'OrtRes Failed',
+		credentials=(sendgrid_username, sendgrid_password)
+	)
+	mail_handler.setLevel(logging.ERROR)
+	app.logger.addHandler(mail_handler)
 
 ort_res = orton_restitution.OrtonRestitution(
 	google_drive_username,
