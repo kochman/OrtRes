@@ -26,6 +26,13 @@ def send_email():
 		elif email.endswith('@georgeschool.org'):
 			user = email[:-len('@georgeschool.org')]
 		should_send = True
+
+		ort_res = orton_restitution.OrtonRestitution(
+			google_drive_username,
+			google_drive_password,
+			google_drive_spreadsheet_key
+		)
+
 		try:
 			student = ort_res.get_student(user)
 		except ValueError:
@@ -69,12 +76,6 @@ if not app.debug:
 	)
 	mail_handler.setLevel(logging.ERROR)
 	app.logger.addHandler(mail_handler)
-
-ort_res = orton_restitution.OrtonRestitution(
-	google_drive_username,
-	google_drive_password,
-	google_drive_spreadsheet_key
-)
 
 if __name__ == '__main__':
 	app.debug = True
