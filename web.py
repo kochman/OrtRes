@@ -18,14 +18,18 @@ def index():
 @app.route('/send-email', methods=['POST'])
 def send_email():
 	email = flask.request.form['email']
-	if '@' not in email:
+	if '@' not in email or email.endswith('@georgeschool.org'):
+		if '@' not in email:
+			user = email
+			email += '@georgeschool.org'
+		elif email.endswith('@georgeschool.org'):
+			user = email[:-len('@georgeschool.org')]
 		should_send = True
 		try:
-			student = ort_res.get_student(email)
+			student = ort_res.get_student(user)
 		except ValueError:
 			should_send = False
 
-		email += '@georgeschool.org'
 		if should_send:
 			sg = sendgrid.SendGridClient(sendgrid_username, sendgrid_password, raise_errors=True)
 			message = sendgrid.Mail()
