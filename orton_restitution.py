@@ -37,10 +37,10 @@ class OrtonRestitution:
 	def get_all_students(self):
 		students = []
 		all_values = self.wks.get_all_values()
-		progression = all_values[0][2:]  # Get restitution names from header row
+		progression = all_values[0][4:]  # Get restitution names from header row
 		records = all_values[1:]  # Get assigned restitutions by excluding header
 		for record in records:
-			recorded_restitutions = record[2:]
+			recorded_restitutions = record[4:]
 			restitutions = []
 
 			for i in range(len(progression)):
@@ -48,7 +48,7 @@ class OrtonRestitution:
 					restitution = Restitution(progression[i], recorded_restitutions[i])
 					restitutions.append(restitution)
 
-			student = Student(record[0], record[1], restitutions)
+			student = Student('{} {}'.format(record[0], record[1]), record[3], restitutions)
 			students.append(student)
 		return students
 

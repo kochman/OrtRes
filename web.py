@@ -20,10 +20,11 @@ def send_email():
 	email = flask.request.form['email']
 	if '@' not in email:
 		student = ort_res.get_student(email)
+		email += '@georgeschool.org'
 
 		sg = sendgrid.SendGridClient(sendgrid_username, sendgrid_password, raise_errors=True)
 		message = sendgrid.Mail()
-		message.add_to('{} <{}>'.format(student.name, student.email))
+		message.add_to('{} <{}>'.format(student.name, email))
 		message.set_subject('Your Orton Restitution History')
 		msg  = 'As requested, your Orton restitution history is here.\n\n'
 		for rest in student.restitutions:
