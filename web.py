@@ -19,25 +19,32 @@ def index():
 def send_email():
 	email = flask.request.form['email']
 	if '@' not in email:
-		student = ort_res.get_student(email)
+		should_send = True
+		try:
+			student = ort_res.get_student(email)
+		except ValueError:
+			should_send = False
+
 		email += '@georgeschool.org'
+		if should_send:
+			sg = sendgrid.SendGridClient(sendgrid_username, sendgrid_password, raise_errors=True)
+			message = sendgrid.Mail()
+			message.add_to('{} <{}>'.format(student.name, email))
+			message.set_subject('Your Orton Restitution History')
+			msg  = 'As requested, your Orton restitution history is here.\n\n'
+			for rest in student.restitutions:
+				msg += str(rest) + '\n'
+			if not student.restitutions:
+				msg += 'You have no restitutions.\n'
+			msg += '\nIf you have any questions or concerns, please contact the Orton staff.'
+			message.set_text(msg)
+			message.set_from('Orton <orton@ortres.sidney.kochman.org>')
 
-		sg = sendgrid.SendGridClient(sendgrid_username, sendgrid_password, raise_errors=True)
-		message = sendgrid.Mail()
-		message.add_to('{} <{}>'.format(student.name, email))
-		message.set_subject('Your Orton Restitution History')
-		msg  = 'As requested, your Orton restitution history is here.\n\n'
-		for rest in student.restitutions:
-			msg += str(rest) + '\n'
-		if not student.restitutions:
-			msg += 'You have no restitutions.\n'
-		msg += '\nIf you have any questions or concerns, please contact the Orton staff.'
-		message.set_text(msg)
-		message.set_from('Orton <orton@ortres.sidney.kochman.org>')
-
-		_, msg = sg.send(message)
+			_, msg = sg.send(message)
 		flask.flash('Email sent to {}.'.format(email))
 		return flask.redirect('/')
+	flask.flash('Improper email.')
+	return flask.redirect('/')
 
 sendgrid_username = os.getenv('SENDGRID_USERNAME')
 sendgrid_password = os.getenv('SENDGRID_PASSWORD')

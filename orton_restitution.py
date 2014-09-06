@@ -57,3 +57,4 @@ class OrtonRestitution:
 		for student in self.get_all_students():
 			if student.email == email:
 				return student
+		raise ValueError('student not found')
