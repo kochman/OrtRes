@@ -83,4 +83,8 @@ body {
   .header {
     border-bottom: 0;
   }
+
+  .input-group-addon {
+    display: none;
+  }
 }
