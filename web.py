@@ -7,7 +7,7 @@ import sendgrid
 import orton_restitution
 
 app = flask.Flask(__name__)
-app.secret_key = 'dfjkladsfjkljj5k66vnkv3458jklfjds3e13231'
+app.secret_key = os.getenv('SECRET_KEY')
 
 
 @app.route('/')
